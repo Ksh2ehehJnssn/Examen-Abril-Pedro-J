@@ -11,18 +11,33 @@ class UniversidadEditarComponent extends Component
 
     protected $rules = [
         'universidad.nombre' => 'required|min:3|max:100',
-        'universidad.ddireccion' => 'required|min:3|max:100',
+        'universidad.direccion' => 'required|min:3|max:100',
         'universidad.telefono' => 'required|min:3|max:100',
         'universidad.email' => 'required|min:3|max:100',
     ];
 
-    public function mount(){
+    public function mount() {
+        //Crear un objeto vacio de Universidad
+        $this->universidad = new Universidad();
+        //Detectar la universidad de la URL
         $universidad = request()->id;
-
-        $this->universidad = Universidad::findOrfail($universidad);
+        //Cargar la universidad que se va a actualizar
+        $this->universidad = Universidad::findOrFail($universidad);
     }
+
     public function render()
     {
         return view('livewire.universidad.universidad-editar-component');
+    }
+
+    public function actualizar(){
+        $id = $this->universidad->id ?? null;
+        $this->validate();
+        Universidad::updateOrCreate([
+            'id' => $id,
+        ], $this->universidad->toArray());
+
+        $this->emit('saved');
+
     }
 }
